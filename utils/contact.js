@@ -13,7 +13,7 @@ if (!fs.existsSync(dataPath)) {
 }
 
 // fungsi untuk membaca/mengambil semua data contact dan di convert kedalam json
-const loadContact = () => {
+const loadContacts = () => {
   const file = fs.readFileSync(dataPath, "utf8");
   // mengubah data dari string menjadi object/array
   const contacts = JSON.parse(file);
@@ -22,10 +22,24 @@ const loadContact = () => {
 
 // fungsi mencari data contact berdasarkan (nama)
 const findContact = (nama) => {
-  const contacts = loadContact()
+  const contacts = loadContacts()
   const contact = contacts.find( contact => contact.nama === nama)
   return contact
 }
 
+// menuliskan/ menimpa file contact.json dengan data yang baru
+const saveContacts = (contacts) => {
+  fs.writeFileSync(dataPath, JSON.stringify(contacts))
+  
+}
+
+// menambahkan data baru
+const addContact = (contact) => {
+  const contacts = loadContacts()
+  contacts.push(contact)
+  saveContacts(contacts)
+}
+
+
 // mengeluarkan fungsi agar bisa digunakan di file lain
-module.exports = { loadContact, findContact };
+module.exports = { loadContacts, findContact, addContact };

@@ -1,7 +1,7 @@
 const express = require("express");
 const expressLayout = require("express-ejs-layouts");
 
-const { loadContact, findContact } = require("./utils/contact");
+const { loadContacts, findContact, addContact } = require("./utils/contact");
 const app = express();
 const port = 3000;
 
@@ -13,6 +13,7 @@ app.use(expressLayout);
 
 // Built-in Middleware
 app.use(express.static("public"));
+app.use(express.urlencoded());
 
 app.get("/", (req, res) => {
   const mahasiswa = [
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// menampilkan halaman about
 app.get("/about", (req, res) => {
   res.render("about", {
     title: "Halaman about",
@@ -45,9 +47,9 @@ app.get("/about", (req, res) => {
   });
 });
 
-// menampilkan seluruh data contact
+// menampilkan halaman data contact
 app.get("/contact", (req, res) => {
-  const contacts = loadContact()
+  const contacts = loadContacts();
   res.render("contact", {
     title: "Halaman Contact",
     layout: "layouts/main-layout",
@@ -55,16 +57,30 @@ app.get("/contact", (req, res) => {
   });
 });
 
-// menampilkan data dengan params (nama)
-app.get("/contact/:nama", (req,res) => {
-    const contact = findContact(req.params.nama)
+// menampilkan halaman add contact
+app.get("/contact/add", (req, res) => {
+  res.render("addContact", {
+    title: "Form Tambah Contact",
+    layout: "layouts/main-layout",
+  });
+});
 
-    res.render('detail', {
-      title : 'Halaman detail Contact',
-      layout : 'layouts/main-layout',
-      contact,
-    })
-})
+// Proses mengirim data contact
+app.post("/contact", (req, res) => {
+  addContact(req.body)
+  res.redirect('/contact')
+});
+
+// menampilkan data dengan params (nama)
+app.get("/contact/:nama", (req, res) => {
+  const contact = findContact(req.params.nama);
+
+  res.render("detail", {
+    title: "Halaman detail Contact",
+    layout: "layouts/main-layout",
+    contact,
+  });
+});
 
 app.use("/", (req, res) => {
   res.status(404);

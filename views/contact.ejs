@@ -1,7 +1,8 @@
 <div class="container">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-8">
             <h2>Daftar Kontak</h2>
+            <a href="/contact/add" class="btn btn-primary mb-3">Tambah data kontak</a>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -12,24 +13,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% contacts.forEach((contact, i)=> { i++%>
+                    <% if (contacts.length===0) { %>
                         <tr>
-                            <th scope="row">
-                                <%= i %>
-                            </th>
-                            <td scope="row">
-                                <%= contact.nama %>
-                            </td>
-                            <td scope="row">
-                                <%= contact.nohp %>
-                            </td>
-                            <td>
-                                <a href="/contact/<%= contact.nama %>" class="btn btn-primary badge rounded-pill"><i
-                                        class="bi bi-info-circle"></i>
-                                    Detail</a>
+                            <td colspan="4" class="text-center fw-bold">
+                                <div class="alert alert-info" role="alert">
+                                   Daftar kontak masih kosong
+                                </div>
                             </td>
                         </tr>
-                        <% }) %>
+                        <% } else { %>
+                            <% contacts.forEach((contact, i)=> { i++%>
+                                <tr>
+                                    <th scope="row">
+                                        <%= i %>
+                                    </th>
+                                    <td scope="row">
+                                        <%= contact.nama %>
+                                    </td>
+                                    <td scope="row">
+                                        <%= contact.nohp %>
+                                    </td>
+                                    <td>
+                                        <a href="/contact/<%= contact.nama %>"
+                                            class="btn btn-primary badge rounded-pill"><i class="bi bi-info-circle"></i>
+                                            Detail</a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                    <% } %>
                 </tbody>
             </table>
         </div>
