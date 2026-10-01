@@ -40,6 +40,12 @@ const addContact = (contact) => {
   saveContacts(contacts)
 }
 
+// cek nama yang duplikat
+const cekDuplikat = (nama) => {
+  const contacts = loadContacts()
+  return contacts.find(contact => contact.nama === nama)
+}
+
 
 // mengeluarkan fungsi agar bisa digunakan di file lain
-module.exports = { loadContacts, findContact, addContact };
+module.exports = { loadContacts, findContact, addContact, cekDuplikat };
