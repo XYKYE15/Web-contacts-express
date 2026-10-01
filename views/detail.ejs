@@ -4,7 +4,8 @@
         <h1>Detail Contact</h1>
         <% if (!contact) { %>
             <div class="alert alert-danger fw-bold" role="alert">
-                Data contact yang di cari tidak ada. <br> <a href="/contact" class="alert-link fw-normal"> &laquo; kembali ke daftar contact</a>
+                Data contact yang di cari tidak ada. <br> <a href="/contact" class="alert-link fw-normal"> &laquo;
+                    kembali ke daftar contact</a>
             </div>
             <% } else { %>
                 <div class="card" style="width: 18rem;">
@@ -18,7 +19,9 @@
                         <p class="card-text">
                             <%= contact.email %>
                         </p>
-                        <a href="/contact" class="card-link">&laquo; Kembali ke daftar Contact</a>
+                        <a href="/contact/edit/<%= contact.nama %>" class="btn btn-info bagde")">Ubah</a>
+                        <a href="/contact/delete/<%= contact.nama %>" class="btn btn-danger bagde" onclick="confirm('Anda yakin ingin menghapus kontak ini?')">Hapus</a>
+                        <a href="/contact" class="card-link d-block mt-3">&laquo; Kembali ke daftar Contact</a>
                     </div>
                 </div>
                 <% } %>

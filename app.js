@@ -6,11 +6,13 @@ const {
   findContact,
   addContact,
   cekDuplikat,
+  deleteContact,
+  updateContact,
 } = require("./utils/contact");
 
-const session = require('express-session')
-const cookieParser = require('cookie-parser')
-const flash = require('connect-flash')
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
 
 const app = express();
 const port = 3000;
@@ -25,16 +27,17 @@ app.use(expressLayout);
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
-
 // Konfigurasi flash
-app.use(cookieParser('secret'))
-app.use(session({
-  cookie : {maxAge : 6000},
-  secret : 'secret',
-  resave : true,
-  saveUninitialized : true,
-}))
-app.use(flash())
+app.use(cookieParser("secret"));
+app.use(
+  session({
+    cookie: { maxAge: 6000 },
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  }),
+);
+app.use(flash());
 
 app.get("/", (req, res) => {
   const mahasiswa = [
@@ -75,7 +78,7 @@ app.get("/contact", (req, res) => {
     title: "Halaman Contact",
     layout: "layouts/main-layout",
     contacts,
-    msg : req.flash('msg'),
+    msg: req.flash("msg"),
   });
 });
 
@@ -111,10 +114,69 @@ app.post(
         errors: errors.array(),
       });
     } else {
-      addContact(req.body)
+      addContact(req.body);
       // mengirim flash message
-      req.flash('msg', 'Data Contact berhasil ditambahkan...')
-      res.redirect('/contact')
+      req.flash("msg", "Data Contact berhasil ditambahkan...");
+      res.redirect("/contact");
+    }
+  },
+);
+
+// Proses Delete Contact
+app.get("/contact/delete/:nama", (req, res) => {
+  const contact = findContact(req.params.nama);
+
+  // Kondisi jika data contact yang di cari tidak ada
+  if (!contact) {
+    res.status(404);
+    res.send("<h1>404</h1>");
+  } else {
+    deleteContact(req.params.nama);
+    req.flash("msg", "Data Contact berhasil dihapus...");
+    res.redirect("/contact");
+  }
+});
+
+// Menampilkan Form ubah data contact
+app.get('/contact/edit/:nama', (req, res) => {
+  const contact = findContact(req.params.nama)
+  res.render('editContact', {
+    title : 'Form Ubah Data Contact',
+    layout : 'layouts/main-layout',
+    contact,
+  })
+})
+
+// Proses mengubah data contact
+// Proses mengirim data contact dan memvalidasi data
+app.post(
+  "/contact/update",
+  [
+    body("nama").custom((value, { req }) => {
+      const duplikat = cekDuplikat(value);
+      if (value !== req.params.oldName && duplikat ) {
+        throw new Error("Nama Contact sudah terdaftar!");
+      }
+      return true;
+    }),
+    check("email", "Email tidak valid!").isEmail(),
+    check("nohp", "No handphone tidak valid!").isMobilePhone("id-ID"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render("editContact", {
+        title: "Form Ubah Data Contact",
+        layout: "layouts/main-layout",
+        errors: errors.array(),
+        contact : req.body,
+      });
+    } else {
+      updateContact(req.body);
+      // mengirim flash message
+      req.flash("msg", "Data Contact berhasil diubah...");
+      res.redirect("/contact");
     }
   },
 );
